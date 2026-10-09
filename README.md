@@ -1,12 +1,25 @@
-# DVCQG Detail Gateway – Vercel
+# DVCQG Detail Gateway v1.1.0
 
-Gateway mỏng để Google Apps Script gọi API chi tiết TTHC chính thức qua một egress khác.
+Gateway trung gian cho Apps Script gọi API chi tiết thủ tục hành chính của Cổng DVCQG.
 
-## Deploy
-1. Import thư mục/repo này vào Vercel.
-2. Tạo Environment Variable `GATEWAY_SHARED_SECRET` với một chuỗi bí mật dài.
-3. Deploy.
-4. Kiểm tra `GET /api/health`.
-5. Apps Script dùng `POST /api/dvcqg-detail`, body `{"id":"<UUID>"}`, header `x-gateway-key`.
+## Điểm mới v1.1.0
 
-Không commit hoặc chia sẻ giá trị secret.
+- Giữ xác thực bằng `GATEWAY_SHARED_SECRET` / header `x-gateway-key`.
+- Gọi API chính thức bằng `fetch` trước.
+- Nếu Node `fetch` lỗi mạng cấp thấp (`fetch failed`), tự thử lại bằng `node:https` và ép IPv4.
+- Nếu cả hai cách đều lỗi, phản hồi chẩn đoán an toàn gồm mã lỗi mạng, không trả secret.
+
+## Endpoint
+
+- `GET /api/health`
+- `POST /api/dvcqg-detail`
+
+Body:
+
+```json
+{"id":"019d2bfd-3fe0-70ac-b9d6-5e9e20d6eef7"}
+```
+
+Header bắt buộc:
+
+`x-gateway-key: <GATEWAY_SHARED_SECRET>`
